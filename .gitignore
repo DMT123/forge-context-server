@@ -1,5 +1,6 @@
 # Binaries
 /forge
+/forge-linux-amd64
 /bin/
 *.exe
 *.test
@@ -20,4 +21,3 @@ configs/*.local.yaml
 
 # Build artifacts
 dist/
-/forge-linux-amd64
