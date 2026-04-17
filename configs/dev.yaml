@@ -1,0 +1,32 @@
+# Forge Context Server — development config (Mac Mini, stdio)
+#
+# This is what Claude Desktop launches. Reads local workspace + Obsidian vault
+# + captured memories and exposes them to Claude via MCP.
+
+server:
+  transport: stdio
+  name: forge-context-server
+  version: 0.1.0-dev
+
+sources:
+  - name: workspace-main
+    type: workspace
+    enabled: true
+    options:
+      root: /Users/davidthorburn/.openclaw/workspace
+
+  - name: obsidian-openclaw
+    type: obsidian
+    enabled: true
+    options:
+      vault: /Users/davidthorburn/Library/CloudStorage/GoogleDrive-d.m.thorburn@gmail.com/My Drive/External Projects/OpenClaw
+
+  - name: memories
+    type: memories
+    enabled: true
+    options:
+      root: /Users/davidthorburn/.local/share/forge/memories
+
+logging:
+  level: info
+  format: text

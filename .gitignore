@@ -1,0 +1,22 @@
+# Binaries
+/forge
+/bin/
+*.exe
+*.test
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Local config overrides
+configs/local.yaml
+configs/*.local.yaml
+
+# Build artifacts
+dist/

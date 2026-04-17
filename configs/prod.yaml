@@ -1,0 +1,21 @@
+# Forge Context Server — production config (VM 113)
+#
+# Runs over HTTP on Tailscale — accessible at 100.x.x.x:8080.
+
+server:
+  transport: http
+  host: 0.0.0.0  # bind all — relies on Tailscale ACL for auth
+  port: 8080
+  name: forge-context-server
+  version: 0.1.0-dev
+
+sources:
+  - name: workspace-synced
+    type: workspace
+    enabled: true
+    options:
+      root: /opt/daemon-forge/workspace
+
+logging:
+  level: info
+  format: text
