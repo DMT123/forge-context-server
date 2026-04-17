@@ -40,6 +40,16 @@ type Source interface {
 	Close() error
 }
 
+// WriteableSource is implemented by sources that can persist new items.
+type WriteableSource interface {
+	Source
+
+	// AddMemory persists a new memory/observation. sourceTag is e.g.
+	// "claude", "chatgpt", "hector" — used to file under the right subdir.
+	// Returns the relative id of the stored item.
+	AddMemory(ctx context.Context, title, body, sourceTag string, tags []string) (string, error)
+}
+
 // ErrNotImplemented indicates a source does not support this operation.
 type ErrNotImplemented struct {
 	SourceName string

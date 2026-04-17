@@ -19,11 +19,14 @@ package memories
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/DMT123/forge-context-server/internal/sources"
 	"github.com/DMT123/forge-context-server/pkg/types"
@@ -183,6 +186,85 @@ func (s *Source) RecentDecisions(ctx context.Context, limit int) ([]types.Decisi
 
 // Close is a no-op.
 func (s *Source) Close() error { return nil }
+
+// AddMemory persists a new memory as a markdown file. sourceTag controls the
+// subdirectory ("claude" → claude-desktop, "chatgpt" → chatgpt, anything else
+// → other/<sourceTag>). Returns the relative id for later GetDocument.
+func (s *Source) AddMemory(ctx context.Context, title, body, sourceTag string, tags []string) (string, error) {
+	title = strings.TrimSpace(title)
+	body = strings.TrimSpace(body)
+	if title == "" || body == "" {
+		return "", errors.New("title and body are required")
+	}
+
+	// Route by source tag
+	var subdir string
+	switch strings.ToLower(sourceTag) {
+	case "claude", "claude-desktop", "anthropic":
+		subdir = "claude-desktop"
+	case "chatgpt", "openai":
+		subdir = "chatgpt"
+	case "", "other":
+		subdir = "other"
+	default:
+		subdir = filepath.Join("other", slugify(sourceTag))
+	}
+
+	dir := filepath.Join(s.root, subdir)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", err
+	}
+
+	// Timestamped filename
+	now := time.Now().UTC()
+	base := fmt.Sprintf("%s-%s.md", now.Format("2006-01-02-150405"), slugify(title))
+	fullPath := filepath.Join(dir, base)
+
+	// Assemble markdown with YAML frontmatter
+	var sb strings.Builder
+	sb.WriteString("---\n")
+	fmt.Fprintf(&sb, "title: %s\n", escapeYAML(title))
+	fmt.Fprintf(&sb, "source: %s\n", sourceTag)
+	fmt.Fprintf(&sb, "captured_at: %s\n", now.Format(time.RFC3339))
+	if len(tags) > 0 {
+		sb.WriteString("tags:\n")
+		for _, t := range tags {
+			fmt.Fprintf(&sb, "  - %s\n", t)
+		}
+	}
+	sb.WriteString("---\n\n")
+	sb.WriteString("# " + title + "\n\n")
+	sb.WriteString(body)
+	sb.WriteString("\n")
+
+	if err := os.WriteFile(fullPath, []byte(sb.String()), 0o644); err != nil {
+		return "", err
+	}
+
+	return relPath(s.root, fullPath), nil
+}
+
+var slugRE = regexp.MustCompile(`[^a-z0-9]+`)
+
+func slugify(s string) string {
+	s = strings.ToLower(s)
+	s = slugRE.ReplaceAllString(s, "-")
+	s = strings.Trim(s, "-")
+	if len(s) > 60 {
+		s = s[:60]
+	}
+	if s == "" {
+		s = "memory"
+	}
+	return s
+}
+
+func escapeYAML(s string) string {
+	if strings.ContainsAny(s, ":\"'#\n") {
+		return "\"" + strings.ReplaceAll(s, "\"", "\\\"") + "\""
+	}
+	return s
+}
 
 // --- helpers ---
 

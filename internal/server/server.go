@@ -93,6 +93,17 @@ type bundleOutput struct {
 	Bundle *types.ContextBundle `json:"bundle"`
 }
 
+type addMemoryInput struct {
+	Title     string   `json:"title" jsonschema:"short title for the memory (required)"`
+	Body      string   `json:"body" jsonschema:"full markdown body of the memory (required)"`
+	Source    string   `json:"source,omitempty" jsonschema:"originating agent: claude | chatgpt | hector | other (default: other)"`
+	Tags      []string `json:"tags,omitempty" jsonschema:"optional list of tags"`
+}
+type addMemoryOutput struct {
+	ID     string `json:"id"`
+	Source string `json:"source"`
+}
+
 func (f *Forge) registerTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "get_identity",
@@ -156,6 +167,29 @@ func (f *Forge) registerTools(server *mcp.Server) {
 			}
 		}
 		return nil, getDocOutput{}, errors.New("document not found in any source")
+	})
+
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "add_memory",
+		Description: "Persist a new memory/observation to the context server. Any agent can write. Returns the stored memory's id.",
+	}, func(ctx context.Context, _ *mcp.CallToolRequest, in addMemoryInput) (*mcp.CallToolResult, addMemoryOutput, error) {
+		if strings.TrimSpace(in.Title) == "" || strings.TrimSpace(in.Body) == "" {
+			return nil, addMemoryOutput{}, errors.New("title and body are required")
+		}
+		for _, src := range f.sources {
+			writer, ok := src.(sources.WriteableSource)
+			if !ok {
+				continue
+			}
+			id, err := writer.AddMemory(ctx, in.Title, in.Body, in.Source, in.Tags)
+			if err != nil {
+				f.logger.Warn("add_memory: source failed", slog.String("source", src.Name()), slog.Any("err", err))
+				continue
+			}
+			f.logger.Info("memory added", slog.String("source", src.Name()), slog.String("id", id))
+			return nil, addMemoryOutput{ID: id, Source: src.Name()}, nil
+		}
+		return nil, addMemoryOutput{}, errors.New("no writeable source available")
 	})
 
 	mcp.AddTool(server, &mcp.Tool{
