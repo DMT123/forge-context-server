@@ -44,7 +44,13 @@ func (f *Forge) Run(ctx context.Context) error {
 	case "http", "sse":
 		addr := fmt.Sprintf("%s:%d", f.cfg.Server.Host, f.cfg.Server.Port)
 		f.logger.Info("starting http transport", slog.String("addr", addr))
-		handler := mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server { return server }, nil)
+		// DisableLocalhostProtection: required because we front this via Cloudflare
+		// Tunnel / Tailscale where the public Host header differs from the bind address.
+		// We still rely on Tailscale ACLs / Cloudflare Access for real authentication.
+		opts := &mcp.StreamableHTTPOptions{
+			DisableLocalhostProtection: true,
+		}
+		handler := mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server { return server }, opts)
 		return http.ListenAndServe(addr, handler)
 	default:
 		return errors.New("unsupported transport: " + f.cfg.Server.Transport)
