@@ -20,3 +20,4 @@ configs/*.local.yaml
 
 # Build artifacts
 dist/
+/forge-linux-amd64
