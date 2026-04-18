@@ -1,4 +1,4 @@
-module github.com/DMT123/forge-context-server
+module github.com/DMT123/davzy-vault
 
 go 1.25.0
 

@@ -53,7 +53,7 @@ func Load(path string) (*Config, error) {
 	}
 	// Sensible defaults
 	if cfg.Server.Name == "" {
-		cfg.Server.Name = "forge-context-server"
+		cfg.Server.Name = "davzy-vault"
 	}
 	if cfg.Server.Version == "" {
 		cfg.Server.Version = "0.1.0-dev"

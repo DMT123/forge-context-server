@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/DMT123/forge-context-server/internal/sources"
-	"github.com/DMT123/forge-context-server/pkg/types"
+	"github.com/DMT123/davzy-vault/internal/sources"
+	"github.com/DMT123/davzy-vault/pkg/types"
 )
 
 // Source reads memory dumps from a directory tree.

@@ -8,7 +8,7 @@ package sources
 import (
 	"context"
 
-	"github.com/DMT123/forge-context-server/pkg/types"
+	"github.com/DMT123/davzy-vault/pkg/types"
 )
 
 // Source is the contract every context backend must implement.

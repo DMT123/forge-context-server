@@ -1,4 +1,4 @@
-// Package types defines the core domain types for the Forge Context Server.
+// Package types defines the core domain types for the DavzyVault.
 package types
 
 import "time"

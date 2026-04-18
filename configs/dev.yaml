@@ -5,7 +5,7 @@
 
 server:
   transport: stdio
-  name: forge-context-server
+  name: davzy-vault
   version: 0.1.0-dev
 
 sources:

@@ -6,7 +6,7 @@ server:
   transport: http
   host: 0.0.0.0
   port: 8080
-  name: forge-context-server
+  name: davzy-vault
   version: 0.1.0-dev
 
 sources:
@@ -14,13 +14,13 @@ sources:
     type: workspace
     enabled: true
     options:
-      root: /opt/forge/workspace
+      root: /opt/davzy-vault/workspace
 
   - name: memories
     type: memories
     enabled: true
     options:
-      root: /opt/forge/data/memories
+      root: /opt/davzy-vault/data/memories
 
 logging:
   level: info

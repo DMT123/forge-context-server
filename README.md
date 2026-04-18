@@ -1,4 +1,4 @@
-# Forge Context Server
+# DavzyVault
 
 **Your portable second brain — accessible to any AI agent via the Model Context Protocol.**
 
@@ -13,35 +13,33 @@ A Go-based MCP server that serves your personal and business context (identity, 
 
 ## Features
 
-- **5 MCP tools**: `get_identity`, `list_projects`, `search_documents`, `get_document`, `get_context_bundle`, `add_memory`
-- **3 source backends** (pluggable, add more):
+- **6 MCP tools**: `get_identity`, `list_projects`, `search_documents`, `get_document`, `get_context_bundle`, `add_memory`
+- **3 source backends** (pluggable):
   - `workspace` — any filesystem tree of markdown files
   - `obsidian` — Obsidian vaults with frontmatter + tags + daily logs
   - `memories` — writable backing store for agent memories
 - **2 transports**: stdio (for local agents) and HTTP (for networked access)
 - **Single Go binary** — ~8MB, <10MB RAM at rest
-- **Battle-tested** in David's homelab on Proxmox via Tailscale + Cloudflare Tunnel
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/DMT123/forge-context-server
-cd forge-context-server
-go build ./cmd/forge
+git clone https://github.com/DMT123/davzy-vault
+cd davzy-vault
+go build -o davzy-vault ./cmd/davzy-vault
 
-# Edit configs/dev.yaml to point at YOUR workspace / vault
-./forge --config=configs/dev.yaml
+./davzy-vault --config=configs/dev.yaml
 ```
 
 ## Claude Desktop Integration
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "forge": {
-      "command": "/absolute/path/to/forge",
+    "davzy-vault": {
+      "command": "/absolute/path/to/davzy-vault",
       "args": ["--config=/absolute/path/to/configs/dev.yaml"],
       "type": "stdio"
     }
@@ -49,19 +47,9 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 }
 ```
 
-Restart Claude Desktop. Five new tools appear under the 🔨 icon.
+## History
 
-## Production Deployment
-
-See `docs/deployment.md` (coming soon) for:
-- Cross-compilation for Linux
-- systemd service definition (hardened: NoNewPrivileges, ProtectSystem)
-- Tailscale-only firewall rules
-- Cloudflare Tunnel for public HTTPS
-
-## Status
-
-v0.1.0 — shipping. More sources + write capabilities landing.
+Previously known as "Forge Context Server". Renamed 2026-04-18 to disambiguate from the Forge DevOps agent and the (future) Forge Model Foundry.
 
 ## License
 

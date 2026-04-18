@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/DMT123/forge-context-server/internal/config"
-	"github.com/DMT123/forge-context-server/internal/sources"
-	"github.com/DMT123/forge-context-server/pkg/types"
+	"github.com/DMT123/davzy-vault/internal/config"
+	"github.com/DMT123/davzy-vault/internal/sources"
+	"github.com/DMT123/davzy-vault/pkg/types"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
